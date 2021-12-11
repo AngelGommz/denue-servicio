@@ -3,9 +3,9 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
 const httpMsgs = require('http-msgs');
+const dotenv = require('dotenv').config();
 
 const app = express();
-
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -14,7 +14,7 @@ app.set('view engine', 'ejs');
 
 app.get('/municipio/:dmun/negocios/:dneg',(req, res) =>{
     const data = [{municipio: req.params.dmun,negocio: req.params.dneg}];
-    res.render('index.html',{data});
+    res.render('index',{data});
 })
 
 

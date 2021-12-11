@@ -1,5 +1,5 @@
-$(document).ready(function(){
-    // alert('entro2');
+// $(document).ready(function(){
+     alert('entro2');
     
     // var dloc = document.getElementById('localidad').value;
     // var dneg = document.getElementById('negocio').value;
@@ -38,4 +38,4 @@ $(document).ready(function(){
     // if(document.getElementById('dato_fichas').innerHTML == ''){
     //     // document.getElementById('dato_fichas').innerHTML = '<h1>SIN VALERES ENCONTRADOS</h1>';
     // }
-});
+// });

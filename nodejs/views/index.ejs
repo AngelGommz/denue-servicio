@@ -14,36 +14,29 @@
           <h1 class="text-center w-100">Angel Gómez</h1>
       </div>
         <% data.forEach(function(datos){ %>
-            <input id="localidad" value="<%= datos.municipio %>">
-            <input id="negocio" value="<%= datos.negocio %>">
+            <input style="display: none;" id="localidad" value="<%= datos.municipio %>">
+            <input style="display: none;" id="negocio" value="<%= datos.negocio %>">
         <% })%>
       <div class="col-md-12 bg-light text-dark">
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Telefono</th>
+                        <th scope="col">Correo_e</th>
+                        <th scope="col">Calle</th>
+                        <th scope="col">Colonia</th>
+                        <th scope="col">Ubicacion</th>
                     </tr>
                 </thead>
                 <tbody id="datosmostrar">
                     <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
+                        <th scope="row">Nombre</th>
+                        <td>Telefono</td>
+                        <td>Correo_e</td>
+                        <td>Calle</td>
+                        <td>Colonia</td>
+                        <td>Ubicacion</td>
                     </tr>
                 </tbody>
             </table>
@@ -53,6 +46,62 @@
 </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script  type="text/javascript" src="./buscador.js"></script>
+    <!-- src="./buscador.js" -->
+    <script  type="text/javascript" >
+        $(document).ready(function(){
+            // alert('entro2');
+            var dloc = document.getElementById('localidad').value;
+            var dneg = document.getElementById('negocio').value;
+            document.getElementById('datosmostrar').innerHTML = '';
+            var contenido = '';
+
+            $.ajax({
+            dataType: "json",
+            url: "https://gaia.inegi.org.mx/wscatgeo/geo/mgee/buscar/"+dloc,
+            })
+            .done(function(r_datos){ 
+                //console.log(r_datos);
+                if(r_datos['result'] == '404'){
+                    $.ajax({
+                    dataType: "json",
+                    url: "https://gaia.inegi.org.mx/wscatgeo/geo/mgem/buscar/"+dloc,
+                    })
+                    .done(function(r_datos){ 
+                        // console.log(r_datos);
+                        if(r_datos['result'] == '404'){
+                            document.getElementById('datosmostrar').innerHTML = 'si resultados';
+                        }
+                    }) 
+                    .fail(function(){ console.log('no'); }) 
+                    .always(function(){ console.log('completado');});
+                }else{
+                    var Acoordenadas = r_datos['features'][0]['geometry']['coordinates'];
+                    //console.log(Acoordenadas);
+                    Acoordenadas.forEach(DAcoordenadas => {
+                        DAcoordenadas[0].forEach(D2Acoordenadas => {
+                            // console.log(D2Acoordenadas);
+                            $.ajax({
+                                dataType: "json",
+                                url: "https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/"+dneg+"/"+D2Acoordenadas[1]+","+D2Acoordenadas[0]+"/250/99fb09ed-8208-45b7-0994-ddf700be7099",
+                            })
+                            .done(function(r_datos3){ 
+                                if(r_datos['result'] != '404'){
+                                    var contenido = '';
+                                    console.log(r_datos3);
+                                    document.getElementById('datosmostrar').innerHTML = document.getElementById('datosmostrar').innerHTML + '<tr><th scope="row">'+r_datos3[0]['Nombre']+'</th><td>'+r_datos3[0]['Telefono']+'</td><td>'+r_datos3[0]['Correo_e']+'</td><td>'+r_datos3[0]['Calle']+'</td><td>'+r_datos3[0]['Colonia']+'</td><td>'+r_datos3[0]['Ubicacion']+'</td></tr>';                                
+                                }
+                            })
+                        });
+                    });
+                    // document.getElementById('datosmostrar').innerHTML = Acoordenadas[0][0][0][0];
+                    //document.getElementById('datosmostrar').innerHTML = document.getElementById('datosmostrar').innerHTML + '<tr><th scope="row">5</th><td>Mark</td><td>Otto</td><td>fin</td></tr>';
+                }
+            }) 
+            .fail(function(){ console.log('Fallo 001'); }) 
+            .always(function(){ console.log('completado 001');});
+
+        });
+
+    </script>
 </body>
 </html>
