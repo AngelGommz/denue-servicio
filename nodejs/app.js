@@ -14,7 +14,7 @@ app.set('view engine', 'ejs');
 
 app.get('/municipio/:dmun/negocios/:dneg',(req, res) =>{
     const data = [{municipio: req.params.dmun,negocio: req.params.dneg}];
-    res.render('index.ejs',{data});
+    res.render('index.html',{data});
 })
 
 
