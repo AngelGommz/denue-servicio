@@ -17,7 +17,7 @@
             <input style="display: none;" id="localidad" value="<%= datos.municipio %>">
             <input style="display: none;" id="negocio" value="<%= datos.negocio %>">
         <% })%>
-      <div class="col-md-12 bg-light text-dark">
+      <div class="col-md-12 bg-light text-dark overflow-auto table-responsive" style="max-height: 80vh;">
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -27,17 +27,11 @@
                         <th scope="col">Calle</th>
                         <th scope="col">Colonia</th>
                         <th scope="col">Ubicacion</th>
+                        <th scope="col">Clase_actividad</th>
                     </tr>
                 </thead>
                 <tbody id="datosmostrar">
-                    <tr>
-                        <th scope="row">Nombre</th>
-                        <td>Telefono</td>
-                        <td>Correo_e</td>
-                        <td>Calle</td>
-                        <td>Colonia</td>
-                        <td>Ubicacion</td>
-                    </tr>
+                    
                 </tbody>
             </table>
       </div>
@@ -67,9 +61,30 @@
                     url: "https://gaia.inegi.org.mx/wscatgeo/geo/mgem/buscar/"+dloc,
                     })
                     .done(function(r_datos){ 
-                        // console.log(r_datos);
+                        console.log(r_datos);
                         if(r_datos['result'] == '404'){
                             document.getElementById('datosmostrar').innerHTML = 'si resultados';
+                        }else{
+                            var Acoordenadas = r_datos['features'][0]['geometry']['coordinates'];
+                            // console.log(Acoordenadas);
+                            Acoordenadas.forEach(DAcoordenadas => {
+                                DAcoordenadas.forEach(D2Acoordenadas => {
+                                    // console.log(D2Acoordenadas);
+                                    $.ajax({
+                                        dataType: "json",
+                                        url: "https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/"+dneg+"/"+D2Acoordenadas[1]+","+D2Acoordenadas[0]+"/250/99fb09ed-8208-45b7-0994-ddf700be7099",
+                                    })
+                                    .done(function(r_datos3){ 
+                                        if(r_datos['result'] != '404'){
+                                            var contenido = '';
+                                            console.log(r_datos3);
+                                            document.getElementById('datosmostrar').innerHTML = document.getElementById('datosmostrar').innerHTML + '<tr><th scope="row">'+r_datos3[0]['Nombre']+'</th><td>'+r_datos3[0]['Telefono']+'</td><td>'+r_datos3[0]['Correo_e']+'</td><td>'+r_datos3[0]['Calle']+'</td><td>'+r_datos3[0]['Colonia']+'</td><td>'+r_datos3[0]['Ubicacion']+'</td><td>'+r_datos3[0]['Clase_actividad']+'</td></tr>';                                
+                                        }
+                                    })
+                                });
+                            });
+                            //document.getElementById('datosmostrar').innerHTML = Acoordenadas[0][0][0][0];
+                            //document.getElementById('datosmostrar').innerHTML = document.getElementById('datosmostrar').innerHTML + '<tr><th scope="row">5</th><td>Mark</td><td>Otto</td><td>fin</td></tr>';
                         }
                     }) 
                     .fail(function(){ console.log('no'); }) 
@@ -88,7 +103,7 @@
                                 if(r_datos['result'] != '404'){
                                     var contenido = '';
                                     console.log(r_datos3);
-                                    document.getElementById('datosmostrar').innerHTML = document.getElementById('datosmostrar').innerHTML + '<tr><th scope="row">'+r_datos3[0]['Nombre']+'</th><td>'+r_datos3[0]['Telefono']+'</td><td>'+r_datos3[0]['Correo_e']+'</td><td>'+r_datos3[0]['Calle']+'</td><td>'+r_datos3[0]['Colonia']+'</td><td>'+r_datos3[0]['Ubicacion']+'</td></tr>';                                
+                                    document.getElementById('datosmostrar').innerHTML = document.getElementById('datosmostrar').innerHTML + '<tr><th scope="row">'+r_datos3[0]['Nombre']+'</th><td>'+r_datos3[0]['Telefono']+'</td><td>'+r_datos3[0]['Correo_e']+'</td><td>'+r_datos3[0]['Calle']+'</td><td>'+r_datos3[0]['Colonia']+'</td><td>'+r_datos3[0]['Ubicacion']+'</td><td>'+r_datos3[0]['Clase_actividad']+'</td></tr>';                                
                                 }
                             })
                         });
